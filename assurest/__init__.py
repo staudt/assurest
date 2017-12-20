@@ -79,7 +79,7 @@ class TestCase:
     def status(self, matcher):
         self.then()
         if not issubclass(matcher.__class__, Matcher):
-            raise TypeError('Can only validate with a Matcher type (see everest matcher types)')
+            raise TypeError('Can only validate with a Matcher type (see matcher types)')
         actual_value = self.response.status_code
         if not matcher.compare_to(actual_value):
             raise AssertionError("Status '{actual}' didn't match {expected}".format(actual=actual_value, expected=str(matcher)))
@@ -88,10 +88,7 @@ class TestCase:
 def given():
     return TestCase()
 
-class EverestConfig():
+class AssurestConfig():
     def __init__(self):
         self.follow_redirect = False
         self.base_url = None
-
-everest = EverestConfig()
-

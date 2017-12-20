@@ -1,10 +1,10 @@
-# Everest
+# Assurest
 A nice Python library for testing REST services heavily inspired by [Rest Assured](http://rest-assured.io/).
 
 It looks like this:
 
 ```python
-from everest import *
+from assurest import *
 
 given() \
     .header('Accept', 'application/json') \
@@ -16,7 +16,9 @@ given() \
         .response_time(less_than(300))
 ```
 
+You can break lines between the chain of methods using implicit line continuation ('\').
+
 ## How it works
 It wraps the [requests](http://docs.python-requests.org/en/master/) library to make it possible to perform full HTTP requests along with assertions, all in the same line of code.
 
-Everest assertions are compatible with all Python unit test libraries. How cool is that?
+Assertions are compatible with all Python unit test libraries. How cool is that?
