@@ -82,7 +82,7 @@ class TestCase:
             raise TypeError('Can only validate with a Matcher type (see matcher types)')
         actual_value = self.response.status_code
         if not matcher.compare_to(actual_value):
-            raise AssertionError("Status '{actual}' didn't match {expected}".format(actual=actual_value, expected=str(matcher)))
+            raise AssertionError("Status '{actual}' didn't match expected {expected}".format(actual=actual_value, expected=str(matcher)))
         return self
 
 def given():
