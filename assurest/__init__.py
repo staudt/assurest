@@ -27,17 +27,23 @@ class contains(Matcher):
         return self.expected in value
 
 
-class PreRequest:
-    def __init__(self):
-        self.headers = {}
-        self.allow_redirects = False
+class Config:
+    def __init__(self, session=None, redirects=False):
+        self.redirects = redirects
+        self.session = None if not session else self.set_session(session)
+
+    def set_session(self, session):
+        if not issubclass(session.__class__, requests.Session):
+            raise ValueError('Invalid session type')
+        self.session = session
+
 
 class TestCase:
-    def __init__(self):
-        self.pre_request = PreRequest()
-        self.session = None
+    def __init__(self, config=None):
         self.response = None
         self.request = None
+        self.config = config if config else Config()
+        self.pre_headers = {}
 
     #Given
     def given(self): #no to be confused with the function given()
@@ -51,7 +57,7 @@ class TestCase:
         if len(params)<1 or len(params)%2!=0:
             raise ValueError('Headers parameters must be even (name, value, ...)')
         for i in range(0,len(params)-1,2):
-            self.pre_request.headers[params[i]] = params[i+1]
+            self.pre_headers[params[i]] = params[i+1]
         return self
 
     def header(self, name, value):
@@ -59,20 +65,13 @@ class TestCase:
         self.headers(name, value)
         return self
 
-    def session(self, session):
-        self.given()
-        if not issubclass(session.__class__, request.session):
-            raise ValueError('Invalid session type')
-        self.session = session
-        return self
-
     #When
     def when(self):
         return self.given()
 
     def perform_request(self, method, url):
-        caller = requests.request if not self.session else self.session.request
-        self.response = caller(method=method, url=url, headers=self.pre_request.headers, allow_redirects=self.pre_request.allow_redirects)
+        caller = requests.request if not self.config.session else self.config.request
+        self.response = caller(method=method, url=url, headers=self.pre_headers, allow_redirects=self.config.redirects)
         self.request = self.response.request
         return self
 
@@ -105,10 +104,13 @@ class TestCase:
             raise AssertionError("Status '{actual}' didn't match expected {expected}".format(actual=actual_value, expected=str(matcher)))
         return self
 
-def given():
-    return TestCase()
 
+def given(config=None):
+    return TestCase(config)
+
+'''
 class AssurestConfig():
     def __init__(self):
         self.follow_redirect = False
         self.base_url = None
+'''
