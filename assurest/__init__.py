@@ -29,27 +29,50 @@ class contains(Matcher):
 
 class PreRequest:
     def __init__(self):
-        self.header = {}
+        self.headers = {}
+        self.allow_redirects = False
 
 class TestCase:
     def __init__(self):
         self.pre_request = PreRequest()
+        self.session = None
         self.response = None
         self.request = None
 
+    #Given
+    def given(self): #no to be confused with the function given()
+        if self.response:
+            raise RuntimeError('Can\'t perform pre-request action after the request was performed')
+        return self
+
     def headers(self, *params):
         #TODO: support dict
+        self.given()
         if len(params)<1 or len(params)%2!=0:
             raise ValueError('Headers parameters must be even (name, value, ...)')
         for i in range(0,len(params)-1,2):
-            self.pre_request.header[params[i]] = params[i+1]
+            self.pre_request.headers[params[i]] = params[i+1]
+        return self
 
     def header(self, name, value):
+        self.given()
         self.headers(name, value)
         return self
 
+    def session(self, session):
+        self.given()
+        if not issubclass(session.__class__, request.session):
+            raise ValueError('Invalid session type')
+        self.session = session
+        return self
+
+    #When
+    def when(self):
+        return self.given()
+
     def perform_request(self, method, url):
-        self.response = requests.request(method=method, url=url)
+        caller = requests.request if not self.session else self.session.request
+        self.response = caller(method=method, url=url, headers=self.pre_request.headers, allow_redirects=self.pre_request.allow_redirects)
         self.request = self.response.request
         return self
 
@@ -64,9 +87,6 @@ class TestCase:
 
     def delete(self, url):
         return self.perform_request(method='delete', url=url)
-
-    def when(self):
-        return self
 
     def then(self):
         if not self.response:
