@@ -25,3 +25,6 @@ class TestRequests(unittest.TestCase):
         given().get('http://www.github.com/staudt/assurest').then().status(equals(301))
         given(Config(redirects=False)).get('http://www.github.com/staudt/assurest').then().status(equals(301))
         given(Config(redirects=True)).get('http://www.github.com/staudt/assurest').then().status(equals(200))
+
+if __name__ == '__main__':
+    unittest.main()
