@@ -16,14 +16,33 @@ class TestRequests(unittest.TestCase):
 
     def test_session(self):
         s = requests.Session()
-        given(Config(session=s)).get('http://www.github.com')
-        previous = given(Config(session=s, redirects=True)).get('http://www.github.com/staudt/assurest').then().status(equals(200))
-        given(Config(session=previous.config.session, redirects=True)).get('http://www.github.com/staudt/assurest').then().status(equals(200))
+        given(config().session(s)).get('http://www.github.com')
+        previous = given(config().session(s).redirects(True)).get('http://www.github.com/staudt/assurest').then().status(equals(200))
+        given(config().session(previous.configuration.request_session).redirects(True)).get('http://www.github.com/staudt/assurest').then().status(equals(200))
 
     def test_redirect(self):
         given().get('http://www.github.com/staudt/assurest').then().status(equals(301))
-        given(Config(redirects=False)).get('http://www.github.com/staudt/assurest').then().status(equals(301))
-        given(Config(redirects=True)).get('http://www.github.com/staudt/assurest').then().status(equals(200))
+        given(config().redirects(False)).get('http://www.github.com/staudt/assurest').then().status(equals(301))
+        given(config().redirects(True)).get('http://www.github.com/staudt/assurest').then().status(equals(200))
+
+
+class TestGoogleMaps(unittest.TestCase):
+    def setUp(self):
+        self.config = config() \
+            .base_url('http://maps.googleapis.com') \
+            .session(requests.Session()) \
+            .follow_redirects(True)
+
+    def test_geomap(self):
+        #.params('address', '1600+Amphitheatre+Parkway,+Mountain+View,+CA',
+        #        'sensor', 'false') \
+        given() \
+            .config(self.config) \
+            .when() \
+                .get('/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&sensor=false') \
+            .then() \
+                .status(equals(200))
+
 
 if __name__ == '__main__':
     unittest.main()
