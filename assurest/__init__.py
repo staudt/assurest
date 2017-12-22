@@ -87,6 +87,18 @@ class TestCase:
     def delete(self, url):
         return self.perform_request(method='delete', url=url)
 
+    def options(self, url):
+        return self.perform_request(method='options', url=url)
+
+    def patch(self, url):
+        return self.perform_request(method='patch', url=url)
+
+    def head(self, url):
+        return self.perform_request(method='head', url=url)
+
+    def trace(self, url):
+        return self.perform_request(method='trace', url=url)
+
     def then(self):
         if not self.response:
             raise RuntimeError('No request to evaluate (you must perform a request first)')
