@@ -107,6 +107,9 @@ class TestCase:
         caller = requests.request if not self.configuration.request_session else self.configuration.request_session.request
         if self.configuration.default_base_url and not url.startswith('http'):
             url = self.configuration.default_base_url + url
+        if self.pre_params:
+            params_line = '&'.join(['{}={}'.format(k, v) for k, v in self.pre_params.items()])
+            url = '{}{}{}'.format(url, '?' if '?' not in url else '&', params_line)
         self.response = caller(method=method, url=url, headers=self.pre_headers, allow_redirects=self.configuration.request_follow_redirects)
         self.request = self.response.request
         return self

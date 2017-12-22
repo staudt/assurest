@@ -34,12 +34,12 @@ class TestGoogleMaps(unittest.TestCase):
             .follow_redirects(True)
 
     def test_geomap(self):
-        #.params('address', '1600+Amphitheatre+Parkway,+Mountain+View,+CA',
-        #        'sensor', 'false') \
         given() \
             .config(self.config) \
+            .params('address', '1600+Amphitheatre+Parkway,+Mountain+View,+CA',
+                    'sensor', 'false') \
             .when() \
-                .get('/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&sensor=false') \
+                .get('/maps/api/geocode/json') \
             .then() \
                 .status(equals(200))
 
