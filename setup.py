@@ -5,8 +5,8 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name='assurest',
-    version='0.1',
-    description='Neat looking tests for rest servers',
+    version='0.2',
+    description='Nice looking tests for REST servers',
     long_description='''Assurest is a library that wraps http requests and validation,
                         you allowing to write it in a single line of chained methods.''',
     url='https://github.com/staudt/assurest',
