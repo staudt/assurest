@@ -33,7 +33,7 @@ class TestGoogleMaps(unittest.TestCase):
             .follow_redirects(True)
 
     def test_geomap(self):
-        test = given() \
+        given() \
             .config(self.config) \
             .params('address', '1600+Amphitheatre+Parkway,+Mountain+View,+CA',
                     'sensor', 'false') \

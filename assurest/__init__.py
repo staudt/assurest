@@ -228,15 +228,15 @@ class AssurestTest:
 
     def body(self, matcher):
         self.then()
-        if self._get_response_type() == 'application/json':
+        '''if self._get_response_type() == 'application/json':
             body_to_compare = self.response.json()
         else: # xml not yet supported
-            body_to_compare = self.response.text
-        if not matcher.compare_to(body_to_compare):
+            body_to_compare = self.response.text'''
+        if not matcher.compare_to(self.response.text):
             raise AssertionError("Body did not match condition: {}".format(str(matcher)))
         return self
 
-    def _get_response_type(self):
+    '''def _get_response_type(self):
         if not self.response:
             return None
         type = get_val_from_case_insensitive_key_in_dict('content-type', self.response.headers)
@@ -244,7 +244,7 @@ class AssurestTest:
             return 'application/json'
         elif 'application/xml' in type.lower() or 'text/xml' in type.lower():
             'application/xml'
-        return None
+        return None'''
 
 def given(config=None):
     return AssurestTest(config)
