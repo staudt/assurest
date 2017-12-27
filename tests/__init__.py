@@ -33,15 +33,18 @@ class TestGoogleMaps(unittest.TestCase):
             .follow_redirects(True)
 
     def test_geomap(self):
-        given() \
+        test = given() \
             .config(self.config) \
             .params('address', '1600+Amphitheatre+Parkway,+Mountain+View,+CA',
                     'sensor', 'false') \
+            .log('headers') \
             .when() \
                 .get('/maps/api/geocode/json') \
             .then() \
-                .status(equals(200))
-
+                .log('headers') \
+                .log('body') \
+                .status(equals(200)) \
+                .body(contains('results'))
 
 if __name__ == '__main__':
     unittest.main()
