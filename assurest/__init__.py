@@ -2,6 +2,14 @@ import requests
 import unittest
 import logging
 
+# Helpers
+def get_val_from_case_insensitive_key_in_dict(key, dict):
+    for k in dict.keys():
+        if key.lower() == k.lower():
+            return dict.get(k)
+    return None
+
+# Matchers/ Comparators
 class Matcher:
     def __init__(self, expected):
         self.expected = expected
@@ -25,9 +33,17 @@ class one_of(Matcher):
 
 class contains(Matcher):
     def compare_to(self, value):
-        return self.expected in value
+        return str(self.expected) in str(value)
+
+class contains_one_of(Matcher):
+    def compare_to(self, value):
+        for item in expected:
+            if str(self.expected) in str(value):
+                return True
+        return False
 
 
+# Config for tests
 class AssurestConfig:
     def __init__(self):
         self.request_follow_redirects = False
@@ -58,7 +74,7 @@ class AssurestConfig:
 def config():
     return AssurestConfig()
 
-
+# Test itself
 class AssurestTest:
     def __init__(self, config=None):
         self.response = None
@@ -68,7 +84,7 @@ class AssurestTest:
         self.pre_params = {}
 
     #Given
-    def given(self): #no to be confused with the function given()
+    def given(self): # not to be confused with the function given()
         if self.response:
             raise RuntimeError('Can\'t perform pre-request action after the request was performed')
         return self
@@ -104,25 +120,37 @@ class AssurestTest:
             self.pre_params[params[i]] = params[i+1]
         return self
 
-    def log(self, level='all'):
-        '''all (default) - gives you all the information'''
+    def log(self, type='all'):
+        '''type can be one of the following:
+            'all' (default) - gives you the full log
+            'headers' - pre-requests headers or headers received (if request was performed)
+            'body' - full response body (if request was performed)
+            'config' - configuration prior to request
+            'pre' - pre-request information (prior to request)
+            'request' - request information
+            'response' - response information'''
         def is_defined(setting):
             return (setting if isinstance(setting, str) else 'Defined') if setting else 'Undefined'
         log = self.configuration.logger.debug if self.configuration.logger else print
         request_performed = True if self.response else False
-        if level in ['all', 'config']:
+        if type == 'headers':
+            if not request_performed:
+                log('Pre-request Headers: {}'.format(self.pre_headers))
+            else:
+                log('Reponse Headers: {}'.format(self.response.headers))
+        if type == 'body':
+            log('Response Body: {}'.format(self.response.text if request_performed else 'Request not performed yet'))
+        if type in ['all', 'config']:
             log('Configuration:')
             log('\tDefault Base-URL: {}'.format(is_defined(self.configuration.default_base_url)))
             log('\tDefault Session: {}'.format(is_defined(self.configuration.request_session)))
             log('\tFollow Redirects: {}'.format(self.configuration.request_follow_redirects))
             log('\tLogger: {}'.format(is_defined(self.configuration.logger)))
-            log('')
-        if level in ['all', 'pre', 'config']:
+        if type in ['all', 'pre', 'config']:
             log('Pre-request:')
             log('\tHeaders: {}'.format(self.pre_headers))
             log('\tParameters: {}'.format(self.pre_params))
-            log('')
-        if level in ['all', 'request']:
+        if type in ['all', 'request']:
             log('Request:')
             if not request_performed:
                 log('Request not yet performed')
@@ -131,8 +159,7 @@ class AssurestTest:
                 log('\tURL: {}'.format(self.request.url))
                 log('\tHeaders: {}'.format(self.request.headers))
                 log('\tBody: {}'.format(self.request.body))
-                log('')
-        if level in ['all', 'response']:
+        if type in ['all', 'response']:
             log('Response:')
             if not request_performed:
                 log('Request not yet performed')
@@ -140,7 +167,7 @@ class AssurestTest:
                 log('\tStatus Code: {status} ({reason})'.format(status=self.response.status_code, reason=self.response.reason))
                 log('\tIs Redirect: {}'.format(self.response.is_redirect))
                 log('\tHeaders: {}'.format(self.response.headers))
-                log('\tText (first 200 chars): {}'.format(self.response.text[:200]))
+                log('\tText (< 200 char): {}'.format(self.response.text[:200]))
         return self
 
     #When
@@ -196,9 +223,28 @@ class AssurestTest:
             raise TypeError('Can only validate with a Matcher type (see matcher types)')
         actual_value = self.response.status_code
         if not matcher.compare_to(actual_value):
-            raise AssertionError("Status '{actual}' didn't match expected {expected}".format(actual=actual_value, expected=str(matcher)))
+            raise AssertionError("Status '{actual}' did not match condition: {expected}".format(actual=actual_value, expected=str(matcher)))
         return self
 
+    def body(self, matcher):
+        self.then()
+        if self._get_response_type() == 'application/json':
+            body_to_compare = self.response.json()
+        else: # xml not yet supported
+            body_to_compare = self.response.text
+        if not matcher.compare_to(body_to_compare):
+            raise AssertionError("Body did not match condition: {}".format(str(matcher)))
+        return self
+
+    def _get_response_type(self):
+        if not self.response:
+            return None
+        type = get_val_from_case_insensitive_key_in_dict('content-type', self.response.headers)
+        if 'application/json' in type.lower():
+            return 'application/json'
+        elif 'application/xml' in type.lower() or 'text/xml' in type.lower():
+            'application/xml'
+        return None
 
 def given(config=None):
     return AssurestTest(config)
