@@ -15,10 +15,10 @@ class TestRequests(unittest.TestCase):
             given().get('http://www.google.com').then().status(equals(201))
 
     def test_session(self):
-        s = requests.Session()
-        given(config().session(s)).get('http://www.github.com')
-        previous = given(config().session(s).redirects(True)).get('http://www.github.com/staudt/assurest').then().status(equals(200))
-        given(config().session(previous.configuration.request_session).redirects(True)).get('http://www.github.com/staudt/assurest').then().status(equals(200))
+        with requests.Session() as s:
+            given(config().session(s)).get('http://www.github.com')
+            previous = given(config().session(s).redirects(True)).get('http://www.github.com/staudt/assurest').then().status(equals(200))
+            given(config().session(previous.configuration.request_session).redirects(True)).get('http://www.github.com/staudt/assurest').then().status(equals(200))
 
     def test_redirect(self):
         given().get('http://www.github.com/staudt/assurest').then().status(equals(301))
@@ -30,7 +30,6 @@ class TestGoogleMaps(unittest.TestCase):
     def setUp(self):
         self.config = config() \
             .base_url('http://maps.googleapis.com') \
-            .session(requests.Session()) \
             .follow_redirects(True)
 
     def test_geomap(self):

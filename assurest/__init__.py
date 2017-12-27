@@ -1,5 +1,6 @@
 import requests
 import unittest
+import logging
 
 class Matcher:
     def __init__(self, expected):
@@ -27,11 +28,12 @@ class contains(Matcher):
         return self.expected in value
 
 
-class TestConfig:
+class AssurestConfig:
     def __init__(self):
         self.request_follow_redirects = False
         self.default_base_url = None
         self.request_session = None
+        self.logger = None
 
     def session(self, session):
         if not issubclass(session.__class__, requests.Session):
@@ -50,11 +52,14 @@ class TestConfig:
         self.default_base_url = url
         return self
 
+    def logger(self, logger=None):
+        self.logger = logger
+
 def config():
-    return TestConfig()
+    return AssurestConfig()
 
 
-class TestCase:
+class AssurestTest:
     def __init__(self, config=None):
         self.response = None
         self.request = None
@@ -72,7 +77,7 @@ class TestCase:
         if not test_config:
             self.configuration = config()
         else:
-            if not issubclass(test_config.__class__, TestConfig):
+            if not issubclass(test_config.__class__, AssurestConfig):
                 raise ValueError('Config provided is invalid (expected TestConfig class)')
             self.configuration = test_config
         return self
@@ -97,6 +102,45 @@ class TestCase:
             raise ValueError('Headers parameters must be even (name, value, ...)')
         for i in range(0,len(params)-1,2):
             self.pre_params[params[i]] = params[i+1]
+        return self
+
+    def log(self, level='all'):
+        '''all (default) - gives you all the information'''
+        def is_defined(setting):
+            return (setting if isinstance(setting, str) else 'Defined') if setting else 'Undefined'
+        log = self.configuration.logger.debug if self.configuration.logger else print
+        request_performed = True if self.response else False
+        if level in ['all', 'config']:
+            log('Configuration:')
+            log('\tDefault Base-URL: {}'.format(is_defined(self.configuration.default_base_url)))
+            log('\tDefault Session: {}'.format(is_defined(self.configuration.request_session)))
+            log('\tFollow Redirects: {}'.format(self.configuration.request_follow_redirects))
+            log('\tLogger: {}'.format(is_defined(self.configuration.logger)))
+            log('')
+        if level in ['all', 'pre', 'config']:
+            log('Pre-request:')
+            log('\tHeaders: {}'.format(self.pre_headers))
+            log('\tParameters: {}'.format(self.pre_params))
+            log('')
+        if level in ['all', 'request']:
+            log('Request:')
+            if not request_performed:
+                log('Request not yet performed')
+            else:
+                log('\tMethod: {}'.format(self.request.method))
+                log('\tURL: {}'.format(self.request.url))
+                log('\tHeaders: {}'.format(self.request.headers))
+                log('\tBody: {}'.format(self.request.body))
+                log('')
+        if level in ['all', 'response']:
+            log('Response:')
+            if not request_performed:
+                log('Request not yet performed')
+            else:
+                log('\tStatus Code: {status} ({reason})'.format(status=self.response.status_code, reason=self.response.reason))
+                log('\tIs Redirect: {}'.format(self.response.is_redirect))
+                log('\tHeaders: {}'.format(self.response.headers))
+                log('\tText (first 200 chars): {}'.format(self.response.text[:200]))
         return self
 
     #When
@@ -157,4 +201,4 @@ class TestCase:
 
 
 def given(config=None):
-    return TestCase(config)
+    return AssurestTest(config)
