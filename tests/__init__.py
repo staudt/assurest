@@ -42,7 +42,6 @@ class TestGoogleMaps(unittest.TestCase):
                 .get('/maps/api/geocode/json') \
             .then() \
                 .log('headers') \
-                .log('body') \
                 .status(equals(200)) \
                 .body(contains('results'))
 

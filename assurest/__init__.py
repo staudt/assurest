@@ -99,8 +99,13 @@ class AssurestTest:
         return self
 
     def headers(self, *params):
-        #TODO: support dict
         self.given()
+        # if it is a dict
+        if len(params) == 1 and isinstance(params[0], dict):
+            for k, v in params[0].items():
+                self.pre_headers[k] = v
+            return self
+        # if it is a even list of params
         if len(params)<1 or len(params)%2!=0:
             raise ValueError('Headers parameters must be even (name, value, ...)')
         for i in range(0,len(params)-1,2):
@@ -114,6 +119,12 @@ class AssurestTest:
 
     def params(self, *params):
         self.given()
+        # if it is a dict
+        if len(params) == 1 and isinstance(params[0], dict):
+            for k, v in params[0].items():
+                self.pre_params[k] = v
+            return self
+        # if it is a even list of params
         if len(params)<1 or len(params)%2!=0:
             raise ValueError('Headers parameters must be even (name, value, ...)')
         for i in range(0,len(params)-1,2):
