@@ -68,7 +68,7 @@ To explain in more detail: **given()** is a factory function that provide the As
 
 You might be wondering how these chained methods work. It's quite simple: Every method always returns it's own object, allowing the next method to be called right after it.
 
-Now, because this test passes, it won't give you much of a feedback. If you want to print (or log) details for debugging, you can add the *log()* method anywhere in between methods (put it after then() if you want the reponse data). This will give you details on everything that was executed. You can also specify the type of data you want with log(**type**), where type can be one of 'all', 'headers', 'body', 'config', 'pre', 'request' or 'response'.
+Now, because this test passes, it won't give you much of a feedback. If you want to print (or log) details for debugging, you can add the **log()** method anywhere in between methods (put it after then() if you want the reponse data). This will give you details on everything that was executed. You can also specify the type of data you want with log(**type**), where type can be one of *'all', 'headers', 'body', 'config', 'pre-request', 'request'* or *'response'*.
 
 Of couse, you can also break down the test in separete steps like this:
 ```python
@@ -82,8 +82,9 @@ mytest.log('body')
 You can also set configuration to be able to reuse settings with the **config()** constructor. Like this:
 ```python
 myconfig = config()\ 
-               .base_url('http://www.google.com') \
-               .follow_redirects(True)
+             .base_url('http://www.google.com') \
+             .follow_redirects(True)
+
 given() \
     .config(myconfig) \
     .when() \
@@ -92,7 +93,6 @@ given() \
         .status(equals(200)) \
         .body(contains('google'))
 ```
-
 
 ## Reference
 ### given() methods
