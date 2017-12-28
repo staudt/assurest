@@ -42,6 +42,13 @@ class contains_one_of(Matcher):
                 return True
         return False
 
+class less_than(Matcher):
+    def compare_to(self, value):
+        return value < self.expected
+
+class more_than(Matcher):
+    def compare_to(self, value):
+        return value > self.expected
 
 # Config for tests
 class AssurestConfig:
@@ -137,7 +144,7 @@ class AssurestTest:
             'headers' - pre-requests headers or headers received (if request was performed)
             'body' - full response body (if request was performed)
             'config' - configuration prior to request
-            'pre' - pre-request information (prior to request)
+            'pre' or 'pre-request' - pre-request information (prior to request)
             'request' - request information
             'response' - response information'''
         def is_defined(setting):
@@ -157,7 +164,7 @@ class AssurestTest:
             log('\tDefault Session: {}'.format(is_defined(self.configuration.request_session)))
             log('\tFollow Redirects: {}'.format(self.configuration.request_follow_redirects))
             log('\tLogger: {}'.format(is_defined(self.configuration.logger)))
-        if type in ['all', 'pre', 'config']:
+        if type in ['all', 'pre', 'pre-request', 'config']:
             log('Pre-request:')
             log('\tHeaders: {}'.format(self.pre_headers))
             log('\tParameters: {}'.format(self.pre_params))
@@ -225,23 +232,25 @@ class AssurestTest:
             raise RuntimeError('No request to evaluate (you must perform a request first)')
         return self
 
-    def assertThat(self):
+    def assert_that(self):
         return self.then()
 
-    def status(self, matcher):
+    def _compare(self, value, matcher):
         self.then()
         if not issubclass(matcher.__class__, Matcher):
             raise TypeError('Can only validate with a Matcher type (see matcher types)')
-        actual_value = self.response.status_code
-        if not matcher.compare_to(actual_value):
+        if not matcher.compare_to(value):
             raise AssertionError("Status '{actual}' did not match condition: {expected}".format(actual=actual_value, expected=str(matcher)))
         return self
 
+    def status(self, matcher):
+        return _compare(self.response.status_code, matcher)
+
     def body(self, matcher):
-        self.then()
-        if not matcher.compare_to(self.response.text):
-            raise AssertionError("Body did not match condition: {}".format(str(matcher)))
-        return self
+        return _compare(self.response.text, matcher)
+
+    def time(self, matcher):
+        return _compare(self.response.elapsed.microseconds, matcher)
 
 def given(config=None):
     return AssurestTest(config)
