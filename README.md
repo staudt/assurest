@@ -64,13 +64,13 @@ given() \
 ```
 This will perform a get call to google maps, that performs a query to the specific address provided in the *params()*, and then will expect a status code 200 in return.
 
-To explain in more detail: **given()** is a factory function that provide the Asserest test class. After *given()*, you enter all pre-request parameters, which can include headers, body content (i.e. parameters, files, form), authentication data, configuration or session information. Then, you have **when()**, which is where you define the action, which is a request method to an URL or path (i.e. get, post, put). After that, **then()** is where the validation and other post-request actions are performed, which include any of the assertions that you can perform.
+To explain in more detail: **given()** is a factory function that provide the Assurest test class. After *given()*, you enter all pre-request parameters, which can include headers, body content (i.e. parameters, files, form), authentication data, configuration or session information. Then, you have **when()**, which is where you define the action, which is a request method to an URL or path (i.e. get, post, put). After that, **then()** is where the validation and other post-request actions are performed, which include any of the assertions that you can perform.
 
 You might be wondering how these chained methods work. It's quite simple: Every method always returns it's own object, allowing the next method to be called right after it.
 
-Now, because this test passes, it won't give you much of a feedback. If you want to print (or log) details for debugging, you can add the **log()** method anywhere in between methods (put it after then() if you want the reponse data). This will give you details on everything that was executed. You can also specify the type of data you want with log(**type**), where type can be one of *'all', 'headers', 'body', 'config', 'pre-request', 'request'* or *'response'*.
+Now, because this test passes, it won't give you much of a feedback. If you want to print (or log) details for debugging, you can add the **log()** method anywhere in between methods (put it after then() if you want the response data). This will give you details on everything that was executed. You can also specify the type of data you want with log(**type**), where type can be one of *'all', 'headers', 'body', 'config', 'pre-request', 'request'* or *'response'*.
 
-Of couse, you can also break down the test in separete steps like this:
+Of course, you can also break down the test into separate steps like this:
 ```python
 mytest = given()
 mytest.params('address', '1600+Amphitheatre+Parkway,+Mountain+View,+CA', 'sensor', 'false')
@@ -81,9 +81,7 @@ mytest.log('body')
 
 You can also set configuration to be able to reuse settings with the **config()** constructor. Like this:
 ```python
-myconfig = config()\ 
-             .base_url('http://www.google.com') \
-             .follow_redirects(True)
+myconfig = config().base_url('http://www.google.com').follow_redirects(True)
 
 given() \
     .config(myconfig) \
@@ -96,29 +94,52 @@ given() \
 
 ## Reference
 ### given() methods
+Factory function for the AssurestTest class. Returns a AssurestTest object.
+
 #### .config(AssurestConfig)
+Set a configuration object (which must be AssurestConfig), so that the test will use it's settings.
 #### .header(name, value)
+Set an individual header for the request.
 #### .headers(name, value, [...])
+Set an list of headers for the request. Every two parameters is a key and value for the a header.
 #### .headers({'name': 'value', [...]})
+Same as the previous headers call, but it takes a python dictionary instead.
 #### .params(name, value, [...])
+Set an list of querystring parameters to be added to the request URL. Every two parameters is a key and value.
 #### .params({'name': 'value', [...]})
+Same as the previous params call, but takes a python dictionary instead.
 #### .session(request_session)
+Sets a Requests Session object for the request. This allows you to maintain the session between requests/tests. Please refer to sessions in the [requests](http://docs.python-requests.org/en/master/) library.
 ### .when() methods
+Ends the pre-parameters portion of the test in order to perform a request. It is optional, you can call one of the requests calls below directly.
 #### .get(path)
+Performs a GET request to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
 #### .post(path)
+Performs a POST request to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
 #### .put(path)
+Performs a PUT request to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
 #### .delete(path)
+Performs a DELETE request to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
 #### .patch(path)
+Performs a PATCH request to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
 #### .options(path)
+Performs a OPTIONS request to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
 #### .head(path)
-#### .head(path)
+Performs a HEAD request to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
 #### .trace(path)
+Performs a TRACE request to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
 #### .perform_request(method, path)
+Performs a requests to an path/URL using a custom method.
 ### .then() methods
+Delimits where the request is performed and the valition of the response starts. This method is optional (it is automatically called by all methods below).
 #### .assert_that()
+Optional method for readability. It doesn't do anything.
 #### .and()
+Optional method for readability, usally used to separate assertions. It doesn't do anything.
 #### .status(Matcher)
+Assertion for the response status code. Will match status code (i.e **200**) with the Matcher specified in the parameter.
 #### .body(Matcher)
+Assertion for the response body. Will match body text with the Matcher specified in the parameter.
 
 ### config() (class AssurestConfig)
 #### base_url(url)
