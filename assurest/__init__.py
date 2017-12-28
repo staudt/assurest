@@ -37,7 +37,8 @@ class contains(Matcher):
 
 class contains_one_of(Matcher):
     def compare_to(self, value):
-        for item in expected:
+        expected_list = expected if isinstance(expected, (list, tuple)) else [expected]
+        for item in expected_list:
             if str(self.expected) in str(value):
                 return True
         return False
@@ -246,11 +247,14 @@ class AssurestTest:
     def status(self, matcher):
         return _compare(self.response.status_code, matcher)
 
+    def status_code(self, matcher): # same as status
+        return _compare(self.response.status_code, matcher)
+
     def body(self, matcher):
         return _compare(self.response.text, matcher)
 
     def time(self, matcher):
-        return _compare(self.response.elapsed.microseconds, matcher)
+        return _compare(self.response.elapsed.microseconds/1000, matcher)
 
 def given(config=None):
     return AssurestTest(config)

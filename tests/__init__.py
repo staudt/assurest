@@ -45,5 +45,6 @@ class TestGoogleMaps(unittest.TestCase):
                 .status(equals(200)) \
                 .body(contains('results'))
 
+
 if __name__ == '__main__':
     unittest.main()
