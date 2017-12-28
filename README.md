@@ -81,21 +81,19 @@ mytest.log('body')
 
 You can also set configuration to be able to reuse settings with the **config()** constructor. Like this:
 ```python
-myconfig = config().base_url('http://www.google.com').follow_redirects(True)
+myconfig = config().base_url('http://www.github.com').follow_redirects(True)
 
 given() \
     .config(myconfig) \
     .when() \
-        .get('/') \
+        .get('/staudt/assurest') \
     .then() \
-        .status(equals(200)) \
-        .body(contains('google'))
+        .status(equals(200))
 ```
 
 ## Reference
 ### given() methods
 Factory function for the AssurestTest class. Returns a AssurestTest object.
-
 #### .config(AssurestConfig)
 Set a configuration object (which must be AssurestConfig), so that the test will use it's settings.
 #### .header(name, value)
@@ -142,11 +140,17 @@ Assertion for the response status code. Will match status code (i.e **200**) wit
 Assertion for the response body. Will match body text with the Matcher specified in the parameter.
 
 ### config() (class AssurestConfig)
+Factory function for the AssurestTest class. Returns a AssurestConfig object.
 #### base_url(url)
+Set the standard base URL for requests. This base URL will be used when the full URL is not specified in requests with this configuration. For example, if the base URL is *http://www.github.com* and the request path is set to */staudt/assurest*, the request will be to  *http://www.github.com/staudt/assurest*. Default is *None*.
 #### session(request_session)
+Set the standard requests session for the request. This allows you to maintain the session between requests/tests. Please refer to sessions in the [requests](http://docs.python-requests.org/en/master/) library. Default is *None*.
 #### follow_redirects(true_or_false)
+Set if the request should automatically follow redirects or not. Default is *False*.
 #### redirects(true_or_false)
+Same as *follow_redirects*.
 #### logger(logger)
+Set the logger in which log() message will output to. If none is set, they will be printed to the console.
 
 ### Matchers
 #### equals(value)
