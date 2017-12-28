@@ -25,7 +25,7 @@ This library makes for a simple, easy to read format of writing regression tests
 
 ## Using Assurest
 ### 1. Installation
-You need Python 3.x installed. Make sure you have (pip)[https://pypi.python.org/pypi/pip] installed and on your path. Then run on your command line:
+You need Python 3.x installed. Make sure you have [pip](https://pypi.python.org/pypi/pip) installed and on your path. Then run on your command line:
 ```
     pip install assurest
 ```
@@ -79,6 +79,21 @@ mytest.status(equals(200))  # then() will also be called automatically
 mytest.log('body')
 ```
 
+You can also set configuration to be able to reuse settings with the **config()** constructor. Like this:
+```python
+myconfig = config()\ 
+               .base_url('http://www.google.com') \
+               .follow_redirects(True)
+given() \
+    .config(myconfig) \
+    .when() \
+        .get('/') \
+    .then() \
+        .status(equals(200)) \
+        .body(contains('google'))
+```
+
+
 ## Reference
 ### given() methods
 #### .config(AssurestConfig)
@@ -101,6 +116,7 @@ mytest.log('body')
 #### .perform_request(method, path)
 ### .then() methods
 #### .assert_that()
+#### .and()
 #### .status(Matcher)
 #### .body(Matcher)
 
