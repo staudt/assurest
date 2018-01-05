@@ -110,22 +110,8 @@ Same as the previous params call, but takes a python dictionary instead.
 Sets a Requests Session object for the request. This allows you to maintain the session between requests/tests. Please refer to sessions in the [requests](http://docs.python-requests.org/en/master/) library.
 ### .when() methods
 Ends the pre-parameters portion of the test in order to perform a request. It is optional, you can call one of the requests calls below directly.
-#### .get(path)
-Performs a GET request to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
-#### .post(path)
-Performs a POST request to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
-#### .put(path)
-Performs a PUT request to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
-#### .delete(path)
-Performs a DELETE request to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
-#### .patch(path)
-Performs a PATCH request to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
-#### .options(path)
-Performs a OPTIONS request to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
-#### .head(path)
-Performs a HEAD request to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
-#### .trace(path)
-Performs a TRACE request to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
+#### .get(path) / .post(path) / .put(path) / .delete(path) / .patch(path) / .options(path) / .head(path) / .trace(path) /  /  /  /  /  / 
+Performs a request according to the name of the method to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
 #### .perform_request(method, path)
 Performs a requests to an path/URL using a custom method.
 ### .then() methods
