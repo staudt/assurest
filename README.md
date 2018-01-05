@@ -110,15 +110,13 @@ Same as the previous params call, but takes a python dictionary instead.
 Sets a Requests Session object for the request. This allows you to maintain the session between requests/tests. Please refer to sessions in the [requests](http://docs.python-requests.org/en/master/) library.
 ### .when() methods
 Ends the pre-parameters portion of the test in order to perform a request. It is optional, you can call one of the requests calls below directly.
-#### .get(path) / .post(path) / .put(path) / .delete(path) / .patch(path) / .options(path) / .head(path) / .trace(path) /  /  /  /  /  / 
+#### .get(path) / .post(path) / .put(path) / .delete(path) / .patch(path) / .options(path) / .head(path) / .trace(path)
 Performs a request according to the name of the method to the specified path (which can be a full URL or continuation of a base_url set in the configuration)
 #### .perform_request(method, path)
 Performs a requests to an path/URL using a custom method.
 ### .then() methods
 Delimits where the request is performed and the valition of the response starts. This method is optional (it is automatically called by all methods below).
-#### .assert_that()
-Optional method for readability. It doesn't do anything.
-#### .and()
+#### .and() / .assert_that()
 Optional method for readability, usally used to separate assertions. It doesn't do anything.
 #### .status(Matcher)
 Assertion for the response status code. Will match status code (i.e **200**) with the Matcher specified in the parameter.
