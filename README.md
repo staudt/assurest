@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/assurest.svg)](https://badge.fury.io/py/assurest)
+
 # Assurest
 A nice Python library for testing REST services, inspired by [Rest Assured](http://rest-assured.io/).
 
