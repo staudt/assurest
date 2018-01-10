@@ -1,1 +1,10 @@
 language: python
+
+python:
+ - '3.6'
+
+install:
+  - pip install requests
+
+script:
+- coverage run tests\__init__.py
