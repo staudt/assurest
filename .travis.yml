@@ -4,7 +4,8 @@ python:
  - '3.6'
 
 install:
-  - pip install requests
+  - pip install requests coverage
 
 script:
-- coverage run tests\__init__.py
+  - python tests
+  - coverage run tests
