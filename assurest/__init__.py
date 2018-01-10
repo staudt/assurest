@@ -241,20 +241,20 @@ class AssurestTest:
         if not issubclass(matcher.__class__, Matcher):
             raise TypeError('Can only validate with a Matcher type (see matcher types)')
         if not matcher.compare_to(value):
-            raise AssertionError("Status '{actual}' did not match condition: {expected}".format(actual=actual_value, expected=str(matcher)))
+            raise AssertionError("Value '{actual}' did not match condition: {expected}".format(actual=value, expected=str(matcher)))
         return self
 
     def status(self, matcher):
-        return _compare(self.response.status_code, matcher)
+        return self._compare(self.response.status_code, matcher)
 
     def status_code(self, matcher): # same as status
-        return _compare(self.response.status_code, matcher)
+        return self._compare(self.response.status_code, matcher)
 
     def body(self, matcher):
-        return _compare(self.response.text, matcher)
+        return self._compare(self.response.text, matcher)
 
     def time(self, matcher):
-        return _compare(self.response.elapsed.microseconds/1000, matcher)
+        return self._compare(self.response.elapsed.microseconds/1000, matcher)
 
 def given(config=None):
     return AssurestTest(config)
